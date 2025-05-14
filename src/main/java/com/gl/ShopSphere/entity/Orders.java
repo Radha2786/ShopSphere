@@ -1,10 +1,12 @@
 package com.gl.ShopSphere.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -12,4 +14,26 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Orders {
+
+    @Id
+    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    Tells JPA how to generate the value for the primary key when a new record is inserted into the database.
+    private Integer id;
+
+            @Column(name = "total")
+            private Double total;
+
+            @Column(name = "status")
+            private String status;
+
+            @Column(name = "created_at")
+            private LocalDateTime created_at;
+
+            @ManyToOne
+            @JoinColumn(name = "user_id")
+            private Users user;
+
+            @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+            private List<Order_items> order_itemsList;
 }

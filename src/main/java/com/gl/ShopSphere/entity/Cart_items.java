@@ -1,7 +1,6 @@
 package com.gl.ShopSphere.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,4 +11,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Cart_items {
+
+    @Id
+    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    Tells JPA how to generate the value for the primary key when a new record is inserted into the database.
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Products product;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 }
