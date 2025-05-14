@@ -19,7 +19,8 @@ public class Orders {
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    Tells JPA how to generate the value for the primary key when a new record is inserted into the database.
-    private Integer id;
+
+            private Integer id;
 
             @Column(name = "total")
             private Double total;
