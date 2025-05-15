@@ -1,0 +1,19 @@
+1. Register a new user whether it can be as an admin or client (create)
+2. Customer/Admin -- get all products (Read)
+3. Admin -- I want to update the order status (update)
+4. Admin -- Add Product (create)
+5. Admin -- Delete Product (Delete)
+7. Admin -- View/get all customers (read)
+8. Customer -- get a particular product by id
+9. Customer -- get a particular product by name
+9. Customer -- Post a review
+10. Customer -- Add to Cart
+10.1 Customer -- As a user, I want to update the quantity of products in my cart, so that I can buy the exact number I want.
+11. Customer -- Delete from cart
+12. Customer -- create an order(As a user, I want to place an order from the items in my cart, so that I can buy the products I selected.)
+13. Admin -- Create or manage categories so that products are well organised
+14. Customer/Admin -- I want to view a product's details along with all its associated reviews
+
+
+6. Admin -- Update Products (update)
+7. findallproducts by categories

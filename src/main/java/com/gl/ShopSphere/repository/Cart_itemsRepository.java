@@ -1,4 +1,8 @@
 package com.gl.ShopSphere.repository;
 
-public class Cart_itemsRepository {
+import com.gl.ShopSphere.entity.Cart_items;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface Cart_itemsRepository extends JpaRepository<Cart_items, Integer> {
+
 }

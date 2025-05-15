@@ -64,6 +64,12 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+[//]: # (extra info for reference )
+One Cart can have many CartItems → @OneToMany(mappedBy = "cart")
+
+One Product can be in many CartItems → @OneToMany(mappedBy = "product")
+
+So Cart ↔ CartItem ↔ Product = Many-to-Many with extra data (quantity).
 
 
 

@@ -32,7 +32,7 @@ public class Products {
     @JoinColumn(name = "category_id")
     private Categories categories;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
     @OneToMany(mappedBy = "product")
