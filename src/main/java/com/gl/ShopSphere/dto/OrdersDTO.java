@@ -17,6 +17,6 @@ public class OrdersDTO {
     private String status;
     private LocalDateTime created_at;
     private UsersDTO usersDTO;
-    private List<Order_itemsDTO> order_itemsDTOs;
+    private List<OrderItemsDTO> order_itemsDTOS;
 
 }

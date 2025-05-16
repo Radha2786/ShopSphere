@@ -36,5 +36,5 @@ public class Orders {
             private Users user;
 
             @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-            private List<Order_items> order_itemsList;
+            private List<OrderItems> order_itemsList;
 }

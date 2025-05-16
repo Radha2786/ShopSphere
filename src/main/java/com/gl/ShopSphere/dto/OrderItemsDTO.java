@@ -7,10 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cart_itemsDTO {
-
+public class OrderItemsDTO {
     private Integer id;
-    private CartDTO cartDTO;
-    private ProductsDTO productsDTO;
     private Integer quantity;
+    private Double price;
+    private OrdersDTO ordersDTO;
+    private ProductsDTO productsDTO;
 }

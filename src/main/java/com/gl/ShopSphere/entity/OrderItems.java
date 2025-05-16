@@ -10,8 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Order_items {
-
+public class OrderItems {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +26,12 @@ public class Order_items {
     @JoinColumn(name = "order_id")
     private Orders order;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Products product;
+}
+
+
 //    “This item belongs to one specific order, identified by order_id.”
 //    May items can belong to 1 specific order
 //     orders table:
@@ -38,7 +43,3 @@ public class Order_items {
 //    1	    1	              10	      1	        1000
 //    2     1	              11	      2         500
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private Products product;
-}

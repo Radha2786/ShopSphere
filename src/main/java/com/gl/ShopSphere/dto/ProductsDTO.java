@@ -17,6 +17,6 @@ public class ProductsDTO {
     private Double price;
     private CategoriesDTO categoriesDTO;
     private List<ReviewsDTO> reviewsDTOs;
-    private List<Cart_itemsDTO> cart_itemsDTOs;
-    private List<Order_itemsDTO> order_itemsDTOs;
+    private List<CartItemsDTO> cart_itemsDTOS;
+    private List<OrderItemsDTO> order_itemsDTOS;
 }

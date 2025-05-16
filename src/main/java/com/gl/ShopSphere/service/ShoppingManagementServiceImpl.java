@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +24,13 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
     @Autowired
     private OrdersRepository ordersRepository;
     @Autowired
-    private Order_itemsRepository order_itemsRepository;
+    private OrderItemsRepository order_itemsRepository;
     @Autowired
     private CategoriesRepository categoriesRepository;
     @Autowired
     private CartRepository cartRepository;
     @Autowired
-    private Cart_itemsRepository cart_itemsRepository;
+    private CartItemsRepository cart_itemsRepository;
 
     @Override
     public ResponseDTO register(UsersDTO usersDTO) throws ShoppingManagementSystemException {
@@ -91,26 +92,26 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
          }
           // Cart items mapping
           if(product.getCart_items()!=null){
-              List<Cart_itemsDTO> cartItemsDTOs = new ArrayList<>();
+              List<CartItemsDTO> cartItemsDTOs = new ArrayList<>();
               for(CartItems item: product.getCart_items()){
-                  Cart_itemsDTO itemsDTO = new Cart_itemsDTO();
+                  CartItemsDTO itemsDTO = new CartItemsDTO();
                   itemsDTO.setId(item.getId());
                   itemsDTO.setQuantity(item.getQuantity());
                   cartItemsDTOs.add(itemsDTO);
               }
-              productsDTO.setCart_itemsDTOs(cartItemsDTOs);
+              productsDTO.setCart_itemsDTOS(cartItemsDTOs);
           }
           //order items mapping
           if(product.getOrder_items()!=null){
-              List<Order_itemsDTO> order_itemsDTOS = new ArrayList<>();
-              for(Order_items item: product.getOrder_items()){
-                  Order_itemsDTO itemDTO = new Order_itemsDTO();
+              List<OrderItemsDTO> order_itemsDTOS = new ArrayList<>();
+              for(OrderItems item: product.getOrder_items()){
+                  OrderItemsDTO itemDTO = new OrderItemsDTO();
                   itemDTO.setId(item.getId());
                   itemDTO.setQuantity(item.getQuantity());
                   itemDTO.setPrice(item.getPrice());
                   order_itemsDTOS.add(itemDTO);
               }
-              productsDTO.setOrder_itemsDTOs(order_itemsDTOS);
+              productsDTO.setOrder_itemsDTOS(order_itemsDTOS);
           }
           productsDTOList.add(productsDTO);
       }
@@ -209,26 +210,26 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
 
         // Cart items mapping
         if(product.getCart_items()!=null){
-            List<Cart_itemsDTO> cartItemsDTOs = new ArrayList<>();
+            List<CartItemsDTO> cartItemsDTOs = new ArrayList<>();
             for(CartItems item: product.getCart_items()){
-                Cart_itemsDTO itemsDTO = new Cart_itemsDTO();
+                CartItemsDTO itemsDTO = new CartItemsDTO();
                 itemsDTO.setId(item.getId());
                 itemsDTO.setQuantity(item.getQuantity());
                 cartItemsDTOs.add(itemsDTO);
             }
-            productsDTO.setCart_itemsDTOs(cartItemsDTOs);
+            productsDTO.setCart_itemsDTOS(cartItemsDTOs);
         }
 
         if(product.getOrder_items()!=null){
-            List<Order_itemsDTO> order_itemsDTOS = new ArrayList<>();
-            for(Order_items item: product.getOrder_items()){
-                Order_itemsDTO itemDTO = new Order_itemsDTO();
+            List<OrderItemsDTO> order_itemsDTOS = new ArrayList<>();
+            for(OrderItems item: product.getOrder_items()){
+                OrderItemsDTO itemDTO = new OrderItemsDTO();
                 itemDTO.setId(item.getId());
                 itemDTO.setQuantity(item.getQuantity());
                 itemDTO.setPrice(item.getPrice());
                 order_itemsDTOS.add(itemDTO);
             }
-            productsDTO.setOrder_itemsDTOs(order_itemsDTOS);
+            productsDTO.setOrder_itemsDTOS(order_itemsDTOS);
         }
 
         return productsDTO;
@@ -252,13 +253,55 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
     }
 
     @Override
-    public ResponseDTO deleteFromCart(Integer cartItemId) throws ShoppingManagementSystemException {
-        return null;
+    public ResponseDTO deleteFromCart(Integer cartId) throws ShoppingManagementSystemException {
+        Cart cart = cartRepository.findById(cartId).orElseThrow(()-> new ShoppingManagementSystemException("No cart found with the given ID in deleteFromCart method.."));
+       if(cart.getCart_items()!=null && !cart.getCart_items().isEmpty()){
+           cart_itemsRepository.deleteAll(cart.getCart_items());
+       }
+        cartRepository.delete(cart);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("cart along with cartitems deleted successfully");
+        return responseDTO;
     }
 
     @Override
-    public ResponseDTO placeOrder(Integer userid, Integer orderid) throws ShoppingManagementSystemException {
-        return null;
+    public ResponseDTO placeOrder(Integer userId, Integer orderId) throws ShoppingManagementSystemException {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ShoppingManagementSystemException("User not found"));
+        Cart cart = user.getCart();
+
+        if (cart.getCart_items().isEmpty()) {
+            throw new ShoppingManagementSystemException("Cart is empty");
+        }
+
+        Orders order = new Orders();
+        order.setUser(user);
+        order.setStatus("Placed");
+        List<OrderItems> orderItemsList = new ArrayList<>();
+        Double total = Double.valueOf(0);
+        for(CartItems cartItem: cart.getCart_items()){
+            OrderItems orderItem = new OrderItems();
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getProduct().getPrice());
+            orderItem.setOrder(order);
+            Double price = cartItem.getProduct().getPrice();
+            total = total+price;
+            orderItemsList.add(orderItem);
+        }
+
+        order.setCreated_at(LocalDateTime.now());
+        order.setTotal(total);
+        order.setOrder_itemsList(orderItemsList);
+//        order.setOrder_itemsList(cart.getCart_items());
+        order = ordersRepository.save(order);
+
+        cart.getCart_items().clear();
+        cartRepository.save(cart);
+
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Order placed successfully with ID: " + order.getId());
+        return responseDTO;
     }
 
 //    @Override
