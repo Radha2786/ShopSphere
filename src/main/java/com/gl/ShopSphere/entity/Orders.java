@@ -31,7 +31,7 @@ public class Orders {
             @Column(name = "created_at")
             private LocalDateTime created_at;
 
-            @ManyToOne
+            @ManyToOne(cascade = CascadeType.ALL)
             @JoinColumn(name = "user_id")
             private Users user;
 

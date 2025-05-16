@@ -28,17 +28,17 @@ public class Products {
     @Column(name = "price")
     private Double price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Categories categories;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "product")
-    private List<Cart_items> cart_items;
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
+    private List<CartItems> cart_items;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
     private List<Order_items> order_items;
 
 }

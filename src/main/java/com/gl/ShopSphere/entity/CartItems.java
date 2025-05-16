@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cart_items {
+public class CartItems {
 
     @Id
     @Column(name="id")
@@ -18,11 +18,11 @@ public class Cart_items {
 //    Tells JPA how to generate the value for the primary key when a new record is inserted into the database.
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Products product;
 

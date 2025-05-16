@@ -23,7 +23,7 @@ public class Order_items {
     @Column(name = "price")
     private Double price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private Orders order;
 
@@ -38,7 +38,7 @@ public class Order_items {
 //    1	    1	              10	      1	        1000
 //    2     1	              11	      2         500
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Products product;
 }

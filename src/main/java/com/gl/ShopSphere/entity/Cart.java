@@ -20,10 +20,10 @@ public class Cart {
 //    Tells JPA how to generate the value for the primary key when a new record is inserted into the database.
     private Integer id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private Users user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    private List<Cart_items> cart_items;
+    private List<CartItems> cart_items;
 }

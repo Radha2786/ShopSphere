@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @Transactional
 public class ShoppingManagementServiceImpl implements ShoppingManagementService{
-
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -93,7 +92,7 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
           // Cart items mapping
           if(product.getCart_items()!=null){
               List<Cart_itemsDTO> cartItemsDTOs = new ArrayList<>();
-              for(Cart_items item: product.getCart_items()){
+              for(CartItems item: product.getCart_items()){
                   Cart_itemsDTO itemsDTO = new Cart_itemsDTO();
                   itemsDTO.setId(item.getId());
                   itemsDTO.setQuantity(item.getQuantity());
@@ -120,37 +119,136 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
 
     @Override
     public ResponseDTO updateOrderStatus(Integer orderId, String newStatus) throws ShoppingManagementSystemException {
-        return null;
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new ShoppingManagementSystemException("Order not found"));
+        order.setStatus(newStatus);
+        ordersRepository.save(order);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Order status updated successfully");
+        return responseDTO;
     }
 
     @Override
     public ResponseDTO addProduct(String role, ProductsDTO productsDTO) throws ShoppingManagementSystemException {
-        return null;
+        if (!"admin".equalsIgnoreCase(role)) {
+            throw new ShoppingManagementSystemException("Only admin can add products");
+        }
+        // check if category exists
+        Integer categoryId = productsDTO.getCategoriesDTO().getId();
+        Categories category = categoriesRepository.findById(categoryId).orElseThrow(()->new ShoppingManagementSystemException("category not found"));
+        // create and populate product
+        Products product = new Products();
+        product.setName(productsDTO.getName());
+        product.setPrice(productsDTO.getPrice());
+        product.setDescription(productsDTO.getDescription());
+        product.setCategories(category);
+
+        //save product
+        productsRepository.save(product);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Product added successfully with ID: " + product.getId());
+        return responseDTO;
     }
 
     @Override
     public ResponseDTO deleteProduct(Integer productId) throws ShoppingManagementSystemException {
-        return null;
-    }
-
-    @Override
-    public UsersDTO getAllCustomers(String role) throws ShoppingManagementSystemException {
-        return null;
+        Products product = productsRepository.findById(productId).orElseThrow(()-> new ShoppingManagementSystemException("product with given id not found"));
+        // delete associated reviews
+        if(product.getReviews()!=null){
+            reviewsRepository.deleteAll(product.getReviews());
+        }
+        // delete associated cart items
+        if(product.getCart_items()!=null){
+            cart_itemsRepository.deleteAll(product.getCart_items());
+        }
+        // delete associated order items
+        if(product.getOrder_items()!=null){
+            order_itemsRepository.deleteAll(product.getOrder_items());
+        }
+        //removing category association
+        product.setCategories(null);
+        // now deleting product
+        productsRepository.delete(product);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Product and associated data deleted successfully");
+        return responseDTO;
     }
 
     @Override
     public ProductsDTO getProductByName(String name) throws ShoppingManagementSystemException {
-        return null;
-    }
+       Products product = productsRepository.findByName(name);
+       if(product==null){
+           throw new ShoppingManagementSystemException("product not found");
+       }
+       ProductsDTO productsDTO = new ProductsDTO();
+       productsDTO.setName(product.getName());
+       productsDTO.setPrice(product.getPrice());
+       productsDTO.setId(product.getId());
+       productsDTO.setDescription(product.getDescription());
 
-    @Override
-    public ResponseDTO postAReview(Integer userid, Integer productid, ReviewsDTO reviewsDTO) throws ShoppingManagementSystemException {
-        return null;
+       if(product.getReviews()!=null){
+           List<ReviewsDTO> reviewsDTOList = new ArrayList<>();
+           for(Reviews review: product.getReviews()){
+               ReviewsDTO reviewsDTO = new ReviewsDTO();
+               reviewsDTO.setId(review.getId());
+               reviewsDTO.setRating(review.getRating());
+               reviewsDTO.setComment(review.getComment());
+               reviewsDTO.setCreatedAt(review.getCreatedAt());
+               reviewsDTOList.add(reviewsDTO);
+           }
+           productsDTO.setReviewsDTOs(reviewsDTOList);
+       }
+
+        // Manually mapping category if present
+        if(product.getCategories()!=null){
+            CategoriesDTO categoriesDTO = new CategoriesDTO();
+            categoriesDTO.setId(product.getCategories().getId());
+            categoriesDTO.setName(product.getCategories().getName());
+            productsDTO.setCategoriesDTO(categoriesDTO);
+        }
+
+        // Cart items mapping
+        if(product.getCart_items()!=null){
+            List<Cart_itemsDTO> cartItemsDTOs = new ArrayList<>();
+            for(CartItems item: product.getCart_items()){
+                Cart_itemsDTO itemsDTO = new Cart_itemsDTO();
+                itemsDTO.setId(item.getId());
+                itemsDTO.setQuantity(item.getQuantity());
+                cartItemsDTOs.add(itemsDTO);
+            }
+            productsDTO.setCart_itemsDTOs(cartItemsDTOs);
+        }
+
+        if(product.getOrder_items()!=null){
+            List<Order_itemsDTO> order_itemsDTOS = new ArrayList<>();
+            for(Order_items item: product.getOrder_items()){
+                Order_itemsDTO itemDTO = new Order_itemsDTO();
+                itemDTO.setId(item.getId());
+                itemDTO.setQuantity(item.getQuantity());
+                itemDTO.setPrice(item.getPrice());
+                order_itemsDTOS.add(itemDTO);
+            }
+            productsDTO.setOrder_itemsDTOs(order_itemsDTOS);
+        }
+
+        return productsDTO;
     }
 
     @Override
     public ResponseDTO addtoCart(Integer userid, Integer productId, Integer quantity) throws ShoppingManagementSystemException {
-        return null;
+//        Cart cart = new Cart();
+        Users user = usersRepository.findById(userid).orElseThrow(()-> new ShoppingManagementSystemException("user not exist inside addtoCart service.."));
+//        cart.setUser(user);
+        Cart cart = user.getCart();
+        CartItems cartItem = new CartItems();
+        cartItem.setQuantity(quantity);
+        Products product = productsRepository.findById(productId).orElseThrow(()-> new ShoppingManagementSystemException("product with given id doesn't exist inside add to cart service.."));
+        cartItem.setProduct(product);
+        cartItem.setCart(cart);
+        cart_itemsRepository.save(cartItem);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Product added to cart");
+        return responseDTO;
     }
 
     @Override
@@ -159,19 +257,29 @@ public class ShoppingManagementServiceImpl implements ShoppingManagementService{
     }
 
     @Override
-    public Cart_itemsDTO updateCartQuantity(Integer cartItemId, int newQuantity) {
-        return null;
-    }
-
-    @Override
     public ResponseDTO placeOrder(Integer userid, Integer orderid) throws ShoppingManagementSystemException {
         return null;
     }
 
-    @Override
-    public ProductsDTO getProductWithReviews(Integer productid) throws ShoppingManagementSystemException {
-        return null;
-    }
+//    @Override
+//    public ProductsDTO getProductWithReviews(Integer productid) throws ShoppingManagementSystemException {
+//        return null;
+//    }
+
+    //    @Override
+//    public UsersDTO getAllCustomers(String role) throws ShoppingManagementSystemException {
+//        return null;
+//    }
+
+    //    @Override
+//    public Cart_itemsDTO updateCartQuantity(Integer cartItemId, int newQuantity) {
+//        return null;
+//    }
+
+    //    @Override
+//    public ResponseDTO postAReview(Integer userid, Integer productid, ReviewsDTO reviewsDTO) throws ShoppingManagementSystemException {
+//        return null;
+//    }
 }
 
 
