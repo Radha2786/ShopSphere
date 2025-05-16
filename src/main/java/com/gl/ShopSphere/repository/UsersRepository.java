@@ -13,7 +13,7 @@ public interface UsersRepository extends JpaRepository<Users,Integer> {
 //    public Users findByEmail(String email);
 
     // for all the select operations
-//    public Users findByEmail(String email);
+    public Users findByEmail(String email);
 //    public Users getByEmail(String email);
     List<Users> findByRole(String role);
 }

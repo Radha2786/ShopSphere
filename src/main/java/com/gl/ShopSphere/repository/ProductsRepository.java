@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
-//    public Products findByName(String name);
-
     // get all products by category (for ex : in jeans category get all jeans)
+
+    public Products findByName(String name);
 
     @Query("select p from products p JOIN FETCH p.reviews where p.id = :id")
     Optional<Products> findProductWithReviews(@Param("id") Integer id);
