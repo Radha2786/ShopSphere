@@ -13,7 +13,7 @@ public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
     public Products findByName(String name);
 
-    @Query("select p from products p JOIN FETCH p.reviews where p.id = :id")
+    @Query("select p from Products p JOIN FETCH p.reviews where p.id = :id")
     Optional<Products> findProductWithReviews(@Param("id") Integer id);
 
 //    tells JPA:

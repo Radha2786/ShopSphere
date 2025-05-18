@@ -32,7 +32,7 @@ public class Users {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Orders> orders;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

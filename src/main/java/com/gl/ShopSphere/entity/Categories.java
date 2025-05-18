@@ -23,6 +23,6 @@ public class Categories {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "categories",cascade = CascadeType.ALL)
     private List<Products> products;
 }

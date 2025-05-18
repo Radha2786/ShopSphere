@@ -32,7 +32,7 @@ public class UsersDTO {
 
     private CartDTO cartDTO;
 
-    @NotEmpty(message = "book dto can not be empty")
+//    @NotEmpty(message = "book dto can not be empty")
     @Valid  //( for providing the validation in ReviewsDTO as well otherwise validation won't work in that class )
     private List<ReviewsDTO> reviewsDTOs;
 }

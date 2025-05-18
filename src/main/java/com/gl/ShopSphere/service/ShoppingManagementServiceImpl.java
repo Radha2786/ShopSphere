@@ -4,9 +4,9 @@ import com.gl.ShopSphere.Exception.ShoppingManagementSystemException;
 import com.gl.ShopSphere.dto.*;
 import com.gl.ShopSphere.entity.*;
 import com.gl.ShopSphere.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
